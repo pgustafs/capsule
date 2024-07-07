@@ -1,0 +1,14 @@
+{% extends 'capsule/base.html' %}
+
+{% block title %}Outfits{% endblock %}
+
+{% block content %}
+<h1>Outfits</h1>
+<ul class="list-group">
+    {% for outfit in outfits %}
+        <li class="list-group-item">
+            <a href="{% url 'outfit_detail' outfit.id %}">{{ outfit.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

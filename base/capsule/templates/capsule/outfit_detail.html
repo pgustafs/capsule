@@ -1,0 +1,15 @@
+{% extends 'capsule/base.html' %}
+
+{% block title %}{{ outfit.name }}{% endblock %}
+
+{% block content %}
+<h1>{{ outfit.name }}</h1>
+<ul class="list-group">
+    {% for item in outfit.items.all %}
+        <li class="list-group-item">
+            {{ item.name }} - {{ item.brand }} - {{ item.size }} - {{ item.color }}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" width="50">
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

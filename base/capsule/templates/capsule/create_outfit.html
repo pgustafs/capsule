@@ -1,0 +1,80 @@
+{% extends 'capsule/base.html' %}
+
+{% block title %}Create Outfit{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h1>Create Outfit</h1>
+<form method="post" id="outfitForm">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary">Save Outfit</button>
+</form>
+<hr>
+<h2>Items</h2>
+<div class="items-container">
+    {% for item in items %}
+        <div class="item" id="item-{{ item.id }}" data-id="{{ item.id }}">
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" width="100">
+            <p>{{ item.name }}</p>
+        </div>
+    {% endfor %}
+</div>
+<hr>
+<h2>Canvas</h2>
+<div id="canvas" class="canvas">
+    <p>Drag items here to create your outfit</p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+
+<script>
+    $(function() {
+        $(".item").draggable({
+            helper: "clone",
+            appendTo: 'body',
+            zIndex: 10000
+        });
+
+        $("#canvas").droppable({
+            accept: ".item",
+            drop: function(event, ui) {
+                var itemId = ui.helper.data("id");
+
+                // Check if the item is already in the canvas
+                if ($("#canvas .item[data-id='" + itemId + "']").length === 0) {
+                    var clone = ui.helper.clone();
+                    var originalImage = clone.find("img");
+                    clone.removeAttr("style");
+                    clone.find("img").css({ width: '20%', height: '20%' }); // Change image size to 200% of its original
+                    clone.appendTo("#canvas").draggable({
+                        containment: "#canvas",
+                        stop: function(event, ui) {
+                            // Prevent duplicates within the canvas
+                            $(this).css("position", "relative");
+                        }
+                    }).attr("data-id", itemId);
+                }
+            }
+        });
+
+        $("#outfitForm").submit(function(e) {
+            var selectedItems = [];
+            $("#canvas .item").each(function() {
+                selectedItems.push($(this).data("id"));
+            });
+
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'items',
+                value: JSON.stringify(selectedItems)
+            }).appendTo("#outfitForm");
+
+            return true;
+        });
+    });
+</script>
+{% endblock %}

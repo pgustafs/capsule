@@ -1,0 +1,15 @@
+{% extends 'capsule/base.html' %}
+
+{% block title %}Items{% endblock %}
+
+{% block content %}
+<h1>Items{% if category_id %} in Category {{ category_id }}{% endif %}</h1>
+<ul class="list-group">
+    {% for item in items %}
+        <li class="list-group-item">
+            {{ item.name }} - {{ item.brand }} - {{ item.size }} - {{ item.color }}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" width="50">
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

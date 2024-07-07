@@ -1,0 +1,18 @@
+{% extends 'capsule/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Welcome to the Virtual Wardrobe</h1>
+    <p>Manage your clothing items and create outfits easily.</p>
+    <div class="list-group">
+        <a href="{% url 'category_list' %}" class="list-group-item list-group-item-action">View Categories</a>
+        <a href="{% url 'outfit_list' %}" class="list-group-item list-group-item-action">View Outfits</a>
+        <a href="{% url 'add_category' %}" class="list-group-item list-group-item-action">Add Category</a>
+        <a href="{% url 'add_item' %}" class="list-group-item list-group-item-action">Add Item</a>
+        <a href="{% url 'add_outfit' %}" class="list-group-item list-group-item-action">Add Outfit</a>
+        <a href="{% url 'create_outfit' %}" class="list-group-item list-group-item-action">Create Outfit</a>
+    </div>
+</div>
+{% endblock %}
