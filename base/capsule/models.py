@@ -6,6 +6,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    
+class SubCategory(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, related_name='subcategories', on_delete=models.CASCADE)
 
 class Item(models.Model):
     SIZE_CHOICES = [
@@ -16,11 +20,14 @@ class Item(models.Model):
         ('XL', 'X-Large'),
     ]
     name = models.CharField(max_length=100)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name='items', on_delete=models.CASCADE, null=True, blank=True)
+    subcategory = models.ForeignKey(SubCategory, related_name='items', on_delete=models.CASCADE, null=True, blank=True)
     brand = models.CharField(max_length=100)
     size = models.CharField(max_length=2, choices=SIZE_CHOICES)
     color = models.CharField(max_length=50)
+    dominant_color = models.CharField(max_length=7, null=True, blank=True) # HEX value automatically detected from image
     image = models.ImageField(upload_to='items/')
+    image_processed = models.BooleanField(default=False)  # Track if the image has been processed
 
     def __str__(self):
         return self.name

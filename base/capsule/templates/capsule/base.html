@@ -48,36 +48,39 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Virtual Wardrobe</a>
+        <a class="navbar-brand" href="{% url 'index' %}">Virtual Wardrobe</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'category_list' %}">Categories</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'all_items' %}">Items</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'outfit_list' %}">Outfits</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'add_category' %}">Add Category</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'add_item' %}">Add Item</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'add_outfit' %}">Add Outfit</a>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'index' %}">Home <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
         </div>
     </nav>
-    <div class="container mt-4">
-        {% block content %}{% endblock %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                {% include 'capsule/sidebar.html' %}
+            </div>
+            <div class="col-md-10">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.category-item').on('click', function(e) {
+                e.preventDefault();
+                $(this).next('.subcategory-list').slideToggle();
+            });
+        });
+    </script>
 </body>
 </html>

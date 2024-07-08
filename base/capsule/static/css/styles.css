@@ -6,3 +6,7 @@
     z-index: 9999;
     display: none;
 }
+
+.list-group-item-action.ml-3 {
+    padding-left: 2rem;
+}

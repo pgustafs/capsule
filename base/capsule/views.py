@@ -1,11 +1,21 @@
 # capsule/views.py
 import json
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Category, Item, Outfit
+from .models import Category, SubCategory, Item, Outfit
 from .forms import CategoryForm, ItemForm, OutfitForm, OutfitForm1
 
 def index(request):
     return render(request, 'capsule/index.html')
+
+def category_items(request, category_id):
+    category = Category.objects.get(id=category_id)
+    items = Item.objects.filter(category=category)
+    return render(request, 'capsule/category_items.html', {'category': category, 'items': items})
+
+def subcategory_items(request, subcategory_id):
+    subcategory = SubCategory.objects.get(id=subcategory_id)
+    items = Item.objects.filter(subcategory=subcategory)
+    return render(request, 'capsule/subcategory_items.html', {'subcategory': subcategory, 'items': items})
 
 def category_list(request):
     categories = Category.objects.all()
