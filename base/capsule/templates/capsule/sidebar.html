@@ -1,4 +1,4 @@
-<div class="list-group">
+<!-- <div class="list-group">
     {% for category in categories %}
         <a href="{% url 'category_items' category.id %}" class="list-group-item list-group-item-action category-item">
             {{ category.name }}
@@ -6,6 +6,20 @@
         <div class="subcategory-list" style="display: none;">
             {% for subcategory in category.subcategories.all %}
                 <a href="{% url 'subcategory_items' subcategory.id %}" class="list-group-item list-group-item-action ml-3">
+                    {{ subcategory.name }}
+                </a>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div> -->
+<div class="list-group">
+    {% for category in categories %}
+        <a href="#" class="list-group-item list-group-item-action category-item" id="category-{{ category.id }}">
+            {{ category.name }}
+        </a>
+        <div class="subcategory-list">
+            {% for subcategory in category.subcategories.all %}
+                <a href="{% url 'subcategory_items' subcategory.id %}" class="list-group-item list-group-item-action">
                     {{ subcategory.name }}
                 </a>
             {% endfor %}

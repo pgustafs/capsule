@@ -7,43 +7,166 @@
     <title>{% block title %}Virtual Wardrobe{% endblock %}</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        .sidebar {
+            position: fixed;
+            top: 56px; /* Height of the navbar */
+            left: -250px; /* Hidden by default */
+            width: 250px;
+            height: calc(100% - 56px); /* Full height minus navbar */
+            background-color: #212529; /* Same as navbar background */
+            color: white;
+            transition: left 0.3s ease-in-out;
+            z-index: 1000;
+            display: none; /* Hide initially */
+        }
+        .sidebar.show {
+            left: 0;
+            display: block; /* Show when ready */
+        }
+        .sidebar a {
+            color: white;
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            background-color: #212529; /* Same as navbar background */
+            border: none; /* Remove borders */
+        }
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #343a40;
+            color: white; /* Ensure text remains white */
+        }
+        .sidebar .subcategory-list {
+            display: none;
+            background-color: #343a40;
+        }
+        .sidebar .subcategory-list.show {
+            display: block;
+        }
+        .sidebar .subcategory-list a {
+            padding-left: 20px;
+            background-color: #3a3f44; /* Slightly lighter color for subcategory */
+        }
+        .content {
+            transition: none; /* Disable transition initially */
+            margin-left: 0; /* Default content margin */
+        }
+        .content.shift {
+            margin-left: 250px;
+            transition: margin-left 0.3s ease-in-out; /* Enable transition when shifting */
+        }
+        .navbar-dark .navbar-nav .nav-link {
+            color: white;
+        }
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #ccc;
+        }
+        .navbar-dark .navbar-brand {
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{% url 'index' %}">Virtual Wardrobe</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'index' %}">Home <span class="sr-only">(current)</span></a>
-                </li>
-            </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <button class="btn btn-dark" id="sidebarToggle"><i class="bi bi-list"></i></button>
+            <a class="navbar-brand ms-2" href="{% url 'index' %}">Virtual Wardrobe</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Menu
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'add_category' %}">Add Category</a></li>
+                            <li><a class="dropdown-item" href="{% url 'add_item' %}">Add Item</a></li>
+                            <li><a class="dropdown-item" href="{% url 'add_outfit' %}">Add Outfit</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-2">
-                {% include 'capsule/sidebar.html' %}
-            </div>
-            <div class="col-md-10">
-                {% block content %}{% endblock %}
-            </div>
+    <div class="sidebar" id="sidebar">
+        {% include 'capsule/sidebar.html' %}
+    </div>
+    <div class="content" id="content">
+        <div class="container-fluid mt-4">
+            {% block content %}{% endblock %}
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- sidebar menu -->
     <script>
         $(document).ready(function() {
+            // Show sidebar after setting state
+            $('#sidebar').show();
+
+            // Restore sidebar state
+            if (localStorage.getItem('sidebarState') === 'shown') {
+                $('#sidebar').addClass('show');
+                $('#content').addClass('shift');
+            }
+
+            // Restore active category and subcategory states
+            if (localStorage.getItem('activeCategory')) {
+                $('#' + localStorage.getItem('activeCategory')).addClass('active');
+            }
+            if (localStorage.getItem('subcategoryState')) {
+                let subcategoryState = JSON.parse(localStorage.getItem('subcategoryState'));
+                for (let key in subcategoryState) {
+                    if (subcategoryState[key]) {
+                        $('#' + key).next('.subcategory-list').addClass('show');
+                    }
+                }
+            }
+
+            // Re-enable transition after initial load
+            setTimeout(function() {
+                $('.content').css('transition', 'margin-left 0.3s ease-in-out');
+            }, 0);
+
+            // Toggle sidebar visibility
+            $('#sidebarToggle').on('click', function() {
+                $('#sidebar').toggleClass('show');
+                $('#content').toggleClass('shift');
+                localStorage.setItem('sidebarState', $('#sidebar').hasClass('show') ? 'shown' : 'hidden');
+            });
+
+            // Handle category click
             $('.category-item').on('click', function(e) {
                 e.preventDefault();
-                $(this).next('.subcategory-list').slideToggle();
+                $(this).next('.subcategory-list').toggleClass('show');
+                $('.category-item').removeClass('active');
+                $(this).addClass('active');
+                localStorage.setItem('activeCategory', $(this).attr('id'));
+                localStorage.setItem('subcategoryState', JSON.stringify(getSubcategoryStates()));
             });
+
+            function getSubcategoryStates() {
+                let states = {};
+                $('.category-item').each(function() {
+                    let subcategoryList = $(this).next('.subcategory-list');
+                    states[$(this).attr('id')] = subcategoryList.hasClass('show');
+                });
+                return states;
+            }
         });
     </script>
 </body>
