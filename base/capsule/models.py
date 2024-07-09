@@ -19,12 +19,23 @@ class Item(models.Model):
         ('L', 'Large'),
         ('XL', 'X-Large'),
     ]
+
+    SEASON_CHOICES = [
+        ('winter', 'Winter'),
+        ('spring', 'Spring'),
+        ('summer', 'Summer'),
+        ('fall', 'Fall'),
+        ('all year', 'All Year'),
+    ]
+
     name = models.CharField(max_length=100)
     category = models.ForeignKey(Category, related_name='items', on_delete=models.CASCADE, null=True, blank=True)
     subcategory = models.ForeignKey(SubCategory, related_name='items', on_delete=models.CASCADE, null=True, blank=True)
     brand = models.CharField(max_length=100)
     size = models.CharField(max_length=2, choices=SIZE_CHOICES)
     color = models.CharField(max_length=50)
+    location = models.CharField(max_length=50, null=True, blank=True)
+    season = models.CharField(max_length=8, null=True, blank=True, choices=SEASON_CHOICES)
     dominant_color = models.CharField(max_length=7, null=True, blank=True) # HEX value automatically detected from image
     image = models.ImageField(upload_to='items/')
     image_processed = models.BooleanField(default=False)  # Track if the image has been processed

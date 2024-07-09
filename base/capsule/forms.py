@@ -1,6 +1,6 @@
 # capsule/forms.py
 from django import forms
-from .models import Category, Item, Outfit
+from .models import Category, SubCategory, Item, Outfit
 import magic
 
 class CategoryForm(forms.ModelForm):
@@ -12,10 +12,29 @@ class CategoryForm(forms.ModelForm):
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ['name', 'category', 'brand', 'size', 'color', 'image']
+        fields = ['name', 'category_or_subcategory', 'brand', 'size', 'color', 'image']
         widgets = {
             'size': forms.Select(choices=Item.SIZE_CHOICES)
         }
+
+    category_or_subcategory = forms.ChoiceField(
+        choices=[],
+        required=True,
+        label='Category or Subcategory'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(ItemForm, self).__init__(*args, **kwargs)
+        categories = Category.objects.all()
+        subcategories = SubCategory.objects.all()
+
+        choices = []
+        for category in categories:
+            choices.append((f"category_{category.id}", category.name))
+            for subcategory in subcategories.filter(category=category):
+                choices.append((f"subcategory_{subcategory.id}", f"  └ {subcategory.name}"))
+
+        self.fields['category_or_subcategory'].choices = choices
 
     # Update the Form to Recognize HEIC Images, needs libmagic and python-magic installed 
     # Dont know if this is needed since most browsers dont support it 

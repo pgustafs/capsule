@@ -168,3 +168,4 @@ migrations
 heic_to_png.py
 remove_background.py
 resize_png.py
+resized_images

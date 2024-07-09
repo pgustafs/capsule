@@ -11,6 +11,7 @@
                 <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
                 <div class="card-body">
                     <p class="card-text">{{ item.name }}</p>
+                    <h2><a href="{% url 'item_detail' item.id %}">Details</a></h2>
                 </div>
             </div>
         </div>
