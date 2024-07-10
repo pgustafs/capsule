@@ -14,6 +14,15 @@
         body {
             overflow-x: hidden; /* Prevent horizontal scroll */
         }
+        .sidebar, .content {
+            visibility: hidden; /* Hide elements initially */
+            opacity: 0; /* Hide elements initially */
+            transition: opacity 0.3s ease-in-out; /* Smooth transition */
+        }
+        .sidebar.show, .content.visible {
+            visibility: visible; /* Show elements when ready */
+            opacity: 1; /* Show elements when ready */
+        }
         .sidebar {
             position: fixed;
             top: 56px; /* Height of the navbar */
@@ -22,13 +31,11 @@
             height: calc(100% - 56px); /* Full height minus navbar */
             background-color: #212529; /* Same as navbar background */
             color: white;
-            transition: left 0.3s ease-in-out;
+            transition: left 0.3s ease-in-out; /* Smooth transition */
             z-index: 1000;
-            display: none; /* Hide initially */
         }
         .sidebar.show {
             left: 0;
-            display: block; /* Show when ready */
         }
         .sidebar a {
             color: white;
@@ -55,12 +62,11 @@
             background-color: #3a3f44; /* Slightly lighter color for subcategory */
         }
         .content {
-            transition: none; /* Disable transition initially */
             margin-left: 0; /* Default content margin */
+            transition: margin-left 0.3s ease-in-out; /* Smooth transition */
         }
         .content.shift {
-            margin-left: 250px;
-            transition: margin-left 0.3s ease-in-out; /* Enable transition when shifting */
+            margin-left: 250px; /* Shift content when sidebar is visible */
         }
         .navbar-dark .navbar-nav .nav-link {
             color: white;
@@ -70,6 +76,49 @@
         }
         .navbar-dark .navbar-brand {
             color: white;
+        }
+        .navbar-nav .dropdown-menu {
+            position: static;
+            float: none;
+        }
+        .navbar-nav .dropdown:hover>.dropdown-menu {
+            display: block;
+        }
+        .navbar-nav .dropdown-menu {
+            margin-top: 0;
+        }
+        .dropdown-submenu {
+            position: relative;
+        }
+        .dropdown-submenu>.dropdown-menu {
+            top: 0;
+            left: 100%;
+            margin-top: -6px;
+        }
+        .dropdown-submenu:hover>.dropdown-menu {
+            display: block;
+        }
+        .dropdown-submenu>a:after {
+            display: block;
+            content: " ";
+            float: right;
+            border-color: transparent;
+            border-left-color: #ccc;
+            border-width: 5px;
+            margin-top: 5px;
+            margin-right: -10px;
+        }
+        .dropdown-submenu:hover>a:after {
+            border-left-color: #fff;
+        }
+        .dropdown-menu>li>a {
+            display: block;
+            padding: 3px 20px;
+            clear: both;
+            font-weight: 400;
+            line-height: 1.42857143;
+            color: #333;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -83,17 +132,44 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'index' %}">Home</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="clothesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Clothes
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="clothesDropdown">
+                            <li><a class="dropdown-item" href="#">Shirts</a></li>
+                            <li><a class="dropdown-item" href="#">T-Shirts</a></li>
+                            <li><a class="dropdown-item" href="#">Polo Shirts</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Menu
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'add_category' %}">Add Category</a></li>
-                            <li><a class="dropdown-item" href="{% url 'add_item' %}">Add Item</a></li>
-                            <li><a class="dropdown-item" href="{% url 'add_outfit' %}">Add Outfit</a></li>
+                        <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                            <li><a class="dropdown-item" href="#">Category 1</a></li>
+                            <li><a class="dropdown-item" href="#">Category 2</a></li>
+                            <li><a class="dropdown-item" href="#">Category 3</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="outfitsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Outfits
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="outfitsDropdown">
+                            <li><a class="dropdown-item" href="#">Outfit 1</a></li>
+                            <li><a class="dropdown-item" href="#">Outfit 2</a></li>
+                            <li><a class="dropdown-item" href="#">Outfit 3</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="brandsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Brands
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="brandsDropdown">
+                            <li><a class="dropdown-item" href="#">Brand 1</a></li>
+                            <li><a class="dropdown-item" href="#">Brand 2</a></li>
+                            <li><a class="dropdown-item" href="#">Brand 3</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -116,15 +192,12 @@
     <!-- sidebar menu -->
     <script>
         $(document).ready(function() {
-            // Show sidebar after setting state
-            $('#sidebar').show();
-
             // Restore sidebar state
             if (localStorage.getItem('sidebarState') === 'shown') {
                 $('#sidebar').addClass('show');
                 $('#content').addClass('shift');
             }
-
+        
             // Restore active category and subcategory states
             if (localStorage.getItem('activeCategory')) {
                 $('#' + localStorage.getItem('activeCategory')).addClass('active');
@@ -137,19 +210,20 @@
                     }
                 }
             }
-
-            // Re-enable transition after initial load
+        
+            // Show sidebar and content after setting state
             setTimeout(function() {
-                $('.content').css('transition', 'margin-left 0.3s ease-in-out');
-            }, 0);
-
+                $('#sidebar').addClass('show');
+                $('#content').addClass('visible');
+            }, 100); // Slight delay to ensure JS processes state changes
+        
             // Toggle sidebar visibility
             $('#sidebarToggle').on('click', function() {
                 $('#sidebar').toggleClass('show');
                 $('#content').toggleClass('shift');
                 localStorage.setItem('sidebarState', $('#sidebar').hasClass('show') ? 'shown' : 'hidden');
             });
-
+        
             // Handle category click
             $('.category-item').on('click', function(e) {
                 e.preventDefault();
@@ -159,7 +233,7 @@
                 localStorage.setItem('activeCategory', $(this).attr('id'));
                 localStorage.setItem('subcategoryState', JSON.stringify(getSubcategoryStates()));
             });
-
+        
             function getSubcategoryStates() {
                 let states = {};
                 $('.category-item').each(function() {
@@ -169,6 +243,11 @@
                 return states;
             }
         });
+        
+        window.onload = function() {
+            document.getElementById('sidebar').style.visibility = 'visible';
+            document.getElementById('content').style.visibility = 'visible';
+        };
     </script>
 </body>
 </html>

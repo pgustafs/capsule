@@ -7,10 +7,6 @@
     display: none;
 }
 
-.list-group-item-action.ml-3 {
-    padding-left: 2rem;
-}
-
 /* clothes matching canvas */
 .items-container {
     display: flex;
@@ -46,3 +42,5 @@
     max-width: 100%;
     max-height: 100%;
 }
+
+/* sidebar and dropdowns*/
