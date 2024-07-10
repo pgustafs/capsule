@@ -14,15 +14,13 @@
         body {
             overflow-x: hidden; /* Prevent horizontal scroll */
         }
+        
         .sidebar, .content {
             visibility: hidden; /* Hide elements initially */
             opacity: 0; /* Hide elements initially */
             transition: opacity 0.3s ease-in-out; /* Smooth transition */
         }
-        .sidebar.show, .content.visible {
-            visibility: visible; /* Show elements when ready */
-            opacity: 1; /* Show elements when ready */
-        }
+        
         .sidebar {
             position: fixed;
             top: 56px; /* Height of the navbar */
@@ -34,9 +32,13 @@
             transition: left 0.3s ease-in-out; /* Smooth transition */
             z-index: 1000;
         }
+        
         .sidebar.show {
             left: 0;
+            visibility: visible;
+            opacity: 1;
         }
+        
         .sidebar a {
             color: white;
             display: block;
@@ -45,59 +47,77 @@
             background-color: #212529; /* Same as navbar background */
             border: none; /* Remove borders */
         }
+        
         .sidebar a:hover,
         .sidebar a.active {
             background-color: #343a40;
             color: white; /* Ensure text remains white */
         }
+        
         .sidebar .subcategory-list {
             display: none;
             background-color: #343a40;
         }
+        
         .sidebar .subcategory-list.show {
             display: block;
         }
+        
         .sidebar .subcategory-list a {
             padding-left: 20px;
             background-color: #3a3f44; /* Slightly lighter color for subcategory */
         }
+        
         .content {
             margin-left: 0; /* Default content margin */
-            transition: margin-left 0.3s ease-in-out; /* Smooth transition */
+            transition: margin-left 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Smooth transition */
+            visibility: visible;
+            opacity: 1;
         }
+        
         .content.shift {
             margin-left: 250px; /* Shift content when sidebar is visible */
         }
+        
         .navbar-dark .navbar-nav .nav-link {
             color: white;
         }
+        
         .navbar-dark .navbar-nav .nav-link:hover {
             color: #ccc;
         }
+        
         .navbar-dark .navbar-brand {
             color: white;
         }
+        
         .navbar-nav .dropdown-menu {
             position: static;
             float: none;
         }
+        
         .navbar-nav .dropdown:hover>.dropdown-menu {
             display: block;
         }
+        
         .navbar-nav .dropdown-menu {
             margin-top: 0;
         }
+        
         .dropdown-submenu {
             position: relative;
         }
+        
         .dropdown-submenu>.dropdown-menu {
             top: 0;
             left: 100%;
             margin-top: -6px;
         }
+        
         .dropdown-submenu:hover>.dropdown-menu {
             display: block;
         }
+        
         .dropdown-submenu>a:after {
             display: block;
             content: " ";
@@ -108,9 +128,11 @@
             margin-top: 5px;
             margin-right: -10px;
         }
+        
         .dropdown-submenu:hover>a:after {
             border-left-color: #fff;
         }
+        
         .dropdown-menu>li>a {
             display: block;
             padding: 3px 20px;
@@ -176,14 +198,17 @@
             </div>
         </div>
     </nav>
-    <div class="sidebar" id="sidebar">
-        {% include 'capsule/sidebar.html' %}
-    </div>
-    <div class="content" id="content">
-        <div class="container-fluid mt-4">
-            {% block content %}{% endblock %}
+    <div class="d-flex">
+        <div class="sidebar" id="sidebar">
+            {% include 'capsule/sidebar.html' %}
+        </div>
+        <div class="content" id="content">
+            <div class="container-fluid mt-4">
+                {% block content %}{% endblock %}
+            </div>
         </div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
@@ -192,6 +217,11 @@
     <!-- sidebar menu -->
     <script>
         $(document).ready(function() {
+            // Hide sidebar by default if no state is set
+            if (localStorage.getItem('sidebarState') === null) {
+                localStorage.setItem('sidebarState', 'hidden');
+            }
+        
             // Restore sidebar state
             if (localStorage.getItem('sidebarState') === 'shown') {
                 $('#sidebar').addClass('show');
@@ -210,12 +240,6 @@
                     }
                 }
             }
-        
-            // Show sidebar and content after setting state
-            setTimeout(function() {
-                $('#sidebar').addClass('show');
-                $('#content').addClass('visible');
-            }, 100); // Slight delay to ensure JS processes state changes
         
             // Toggle sidebar visibility
             $('#sidebarToggle').on('click', function() {
