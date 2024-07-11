@@ -36,7 +36,18 @@ class Item(models.Model):
     color = models.CharField(max_length=50)
     location = models.CharField(max_length=50, null=True, blank=True)
     season = models.CharField(max_length=8, null=True, blank=True, choices=SEASON_CHOICES)
-    dominant_color = models.CharField(max_length=7, null=True, blank=True) # HEX value automatically detected from image
+    notes = models.CharField(max_length=500, null=True, blank=True)
+    red = models.IntegerField(null=True, blank=True) # RGB Color red
+    green = models.IntegerField(null=True, blank=True) # RGB color green
+    blue = models.IntegerField(null=True, blank=True) # RGB Color blue
+    primary_dominant_color = models.CharField(max_length=7, null=True, blank=True) # HEX value automatically detected from image
+    secondary_dominant_color = models.CharField(max_length=7, null=True, blank=True)
+    complementary_primary_dominant_color = models.CharField(max_length=7, null=True, blank=True)
+    complementary_secondary_dominant_color = models.CharField(max_length=7, null=True, blank=True)
+    monochromatic_color_1 = models.CharField(max_length=7, null=True, blank=True)
+    monochromatic_color_2 = models.CharField(max_length=7, null=True, blank=True)
+    monochromatic_color_3 = models.CharField(max_length=7, null=True, blank=True)
+    analogous_color_1 = models.CharField(max_length=7, null=True, blank=True)
     image = models.ImageField(upload_to='items/')
     image_processed = models.BooleanField(default=False)  # Track if the image has been processed
 

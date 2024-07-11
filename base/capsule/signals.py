@@ -13,8 +13,79 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def preprocess_image(image):
+    # Convert image to RGBA if it is not already
+    if image.shape[2] == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGBA)
+    
+    # Print shape after conversion
+    print(f"Image shape after conversion: {image.shape}")
+
+    # Filter out transparent pixels
+    non_transparent_pixels = image[image[:, :, 3] != 0]
+    pixels = non_transparent_pixels[:, :3]  # Drop the alpha channel
+    
+    # Print shape after filtering transparent pixels
+    print(f"Pixels shape after filtering: {pixels.shape}")
+    
+    return np.float32(pixels)
+
+def get_dominant_colors(pixels, k=3):
+    kmeans = KMeans(n_clusters=k)
+    kmeans.fit(pixels)
+    colors = kmeans.cluster_centers_
+    labels = kmeans.labels_
+    counts = np.bincount(labels)
+    dominant_color_indices = np.argsort(counts)[::-1]  # Indices of colors sorted by count in descending order
+    return colors.astype(int), dominant_color_indices
+
 def rgb_to_hex(color):
-    return "#{:02x}{:02x}{:02x}".format(color[0], color[1], color[2])
+    return "#{:02x}{:02x}{:02x}".format(color[0], color[1], color[2])  # Convert RGB to Hex
+
+def get_complementary_color(color):
+    # Calculate the complementary color
+    comp_color = 255 - color
+    return comp_color
+
+def get_monochromatic_colors(color):
+    # Generate three monochromatic colors: one dark shade, one light tint, and one in the middle
+    hsv_color = cv2.cvtColor(np.uint8([[color]]), cv2.COLOR_RGB2HSV)[0][0]
+    
+    # Dark shade
+    dark_shade = np.copy(hsv_color)
+    dark_shade[2] = max(0, hsv_color[2] - 50)
+    dark_shade_rgb = cv2.cvtColor(np.uint8([[dark_shade]]), cv2.COLOR_HSV2RGB)[0][0]
+    
+    # Light tint
+    light_tint = np.copy(hsv_color)
+    light_tint[2] = min(255, hsv_color[2] + 50)
+    light_tint_rgb = cv2.cvtColor(np.uint8([[light_tint]]), cv2.COLOR_HSV2RGB)[0][0]
+    
+    # Middle color (slight adjustment)
+    middle_color = np.copy(hsv_color)
+    middle_color[2] = min(255, max(0, hsv_color[2]))
+    middle_color_rgb = cv2.cvtColor(np.uint8([[middle_color]]), cv2.COLOR_HSV2RGB)[0][0]
+    
+    return [dark_shade_rgb, middle_color_rgb, light_tint_rgb]
+
+def get_analogous_colors(color):
+    # Generate two analogous colors by shifting the hue by ±30 degrees
+    hsv_color = cv2.cvtColor(np.uint8([[color]]), cv2.COLOR_RGB2HSV)[0][0]
+    analogous_colors = []
+    
+    # Shift hue by -30 degrees
+    analogous_color1 = np.copy(hsv_color)
+    analogous_color1[0] = (hsv_color[0] - 30) % 180  # OpenCV uses hue range [0, 180]
+    analogous_color1_rgb = cv2.cvtColor(np.uint8([[analogous_color1]]), cv2.COLOR_HSV2RGB)[0][0]
+    analogous_colors.append(analogous_color1_rgb)
+    
+    # Shift hue by +30 degrees
+    analogous_color2 = np.copy(hsv_color)
+    analogous_color2[0] = (hsv_color[0] + 30) % 180  # OpenCV uses hue range [0, 180]
+    analogous_color2_rgb = cv2.cvtColor(np.uint8([[analogous_color2]]), cv2.COLOR_HSV2RGB)[0][0]
+    analogous_colors.append(analogous_color2_rgb)
+    
+    return analogous_colors
 
 def crop_transparent_area(image):
     # Convert the image to RGBA if it isn't already
@@ -38,68 +109,6 @@ def resize_for_processing(image, target_size=(300, 300)):
     logger.info("Resizing image for processing...")
     image.thumbnail(target_size, Image.Resampling.LANCZOS)
     return image
-
-#def detect_dominant_color(image):
-#    logger.info("Detecting dominant color...")
-#    # Resize image to speed up processing
-#    image = resize_for_processing(image)
-#
-#    # Convert image to numpy array
-#    image_np = np.array(image)
-#
-#    # Reshape the image to be a list of pixels
-#    if image_np.shape[2] == 4:  # If there's an alpha channel, remove it
-#        image_np = image_np[:, :, :3]
-#
-#    pixels = image_np.reshape((-1, 3))
-#
-#    # Use KMeans to find the most common colors
-#    kmeans = KMeans(n_clusters=3, random_state=0)
-#    kmeans.fit(pixels)
-#    counter = Counter(kmeans.labels_)
-#    dominant_color = kmeans.cluster_centers_[counter.most_common(1)[0][0]]
-#
-#    return tuple(int(c) for c in dominant_color)
-#def detect_dominant_color(image, num_colors):
-#    # Reshape the image to be a list of pixels
-#    pixels = image.reshape((-1, 3))
-#
-#    # Apply k-means clustering to find dominant colors
-#    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 200, 0.1)
-#    _, labels, centers = cv2.kmeans(pixels.astype(np.float32), num_colors, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-#
-#    # Convert the RGB values of dominant colors to integers
-#    dominant_colors = np.uint8(centers)
-#
-#     # Get the dominant color in RGB
-#    dominant_color_rgb = dominant_colors[0]
-#
-#    # Convert the dominant color to hex
-#    dominant_color_hex = rgb_to_hex(dominant_color_rgb)
-#
-#    return dominant_color_hex
-
-def detect_dominant_color(image, num_colors):
-    # Reshape the image to be a list of pixels
-    pixels = image.reshape((-1, 3))
-    pixels = np.float32(pixels)
-
-
-    # Apply k-means clustering to find dominant colors
-    kmeans = KMeans(n_clusters=num_colors)
-    kmeans.fit(pixels)
-    colors = kmeans.cluster_centers_
-
-    # Convert the RGB values of dominant colors to integers
-    dominant_colors = colors.astype(int)
-
-     # Get the dominant color in RGB
-    dominant_color_rgb = dominant_colors[2]
-
-    # Convert the dominant color to hex
-    dominant_color_hex = rgb_to_hex(dominant_color_rgb)
-
-    return dominant_color_hex
 
 
 @receiver(post_save, sender=Item)
@@ -127,13 +136,29 @@ def process_image(sender, instance, **kwargs):
 
         # Detect dominant color
         logger.info("Detecting dominant color...")
-        image = cv2.imread(image_path)
-        dominant_color = detect_dominant_color(image, 3)
-        logger.info(f"Dominant Color: {dominant_color}")
+        num_colors = 3 # number of dominant colors to detect
+        image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)  # Load with alpha channel
+        image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)  # Ensure it is in RGBA
+        preprocessed_image = preprocess_image(image)
+        dominant_colors, dominant_color_indices = get_dominant_colors(preprocessed_image, k=num_colors)
+        primary_dominant_color_hex = rgb_to_hex(dominant_colors[dominant_color_indices[0]])
+        logger.info(f"Primary Dominant Color: {primary_dominant_color_hex}")
+        secondary_dominant_color_hex = rgb_to_hex(dominant_colors[dominant_color_indices[1]])
+        logger.info(f"Secondary Dominant Color: {secondary_dominant_color_hex}")
+        red, green, blue = dominant_colors[dominant_color_indices[0]].astype(int) # Split RGB into Red, green and blue
+        logger.info(f"RGB Red value: {red}")
+        logger.info(f"RGB Green value: {green}")
+        logger.info(f"RGB Blue value: {blue}")
 
         # Save the dominant color and mark as processed
-        instance.dominant_color = dominant_color
+        instance.primary_dominant_color = primary_dominant_color_hex
+        instance.secondary_dominant_color = secondary_dominant_color_hex
         instance.image_processed = True
-        instance.save(update_fields=['dominant_color', 'image_processed'])
+        instance.save(update_fields=[
+                                    'primary_dominant_color',
+                                    'secondary_dominant_color',
+                                    'image_processed'
+                                    ]
+                                )
 
         logger.info(f"Processing complete for image: {instance.image.path}")
