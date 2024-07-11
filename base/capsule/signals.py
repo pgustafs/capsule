@@ -150,13 +150,24 @@ def process_image(sender, instance, **kwargs):
         logger.info(f"RGB Green value: {green}")
         logger.info(f"RGB Blue value: {blue}")
 
+        # Get complementary colors
+        primary_dominant_comp_color = get_complementary_color(dominant_colors[dominant_color_indices[0]])
+        secondary_dominant_comp_color = get_complementary_color(dominant_colors[dominant_color_indices[1]])
+        primary_dominant_comp_color_hex = rgb_to_hex(primary_dominant_comp_color)
+        secondary_dominant_comp_color_hex = rgb_to_hex(secondary_dominant_comp_color)
+
         # Save the dominant color and mark as processed
         instance.primary_dominant_color = primary_dominant_color_hex
         instance.secondary_dominant_color = secondary_dominant_color_hex
+        instance.complementary_primary_dominant_color = primary_dominant_comp_color_hex
+        instance.complementary_secondary_dominant_color = secondary_dominant_comp_color_hex
+
         instance.image_processed = True
         instance.save(update_fields=[
                                     'primary_dominant_color',
                                     'secondary_dominant_color',
+                                    'complementary_primary_dominant_color',
+                                    'complementary_secondary_dominant_color',
                                     'image_processed'
                                     ]
                                 )

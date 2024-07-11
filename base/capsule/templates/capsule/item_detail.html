@@ -11,6 +11,10 @@
     <div style="width: 50px; height: 50px; background-color: {{ item.primary_dominant_color }};"></div>
     <p><strong>Secondary Dominant Color:</strong></p>
     <div style="width: 50px; height: 50px; background-color: {{ item.secondary_dominant_color }};"></div>
+    <p><strong>Complementary Primary Dominant Color:</strong></p>
+    <div style="width: 50px; height: 50px; background-color: {{ item.complementary_primary_dominant_color }};"></div>
+    <p><strong>Complementary Secondary Dominant Color:</strong></p>
+    <div style="width: 50px; height: 50px; background-color: {{ item.complementary_secondary_dominant_color }};"></div>
     <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 300px; height: auto;"> <!-- Larger image -->
     <a href="{% url 'delete_item' item.id %}" class="btn btn-danger">Delete Item</a>
 {% endblock %}
