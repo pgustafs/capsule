@@ -151,23 +151,58 @@ def process_image(sender, instance, **kwargs):
         logger.info(f"RGB Blue value: {blue}")
 
         # Get complementary colors
+        logger.info("Detecting complementary color...")
         primary_dominant_comp_color = get_complementary_color(dominant_colors[dominant_color_indices[0]])
         secondary_dominant_comp_color = get_complementary_color(dominant_colors[dominant_color_indices[1]])
         primary_dominant_comp_color_hex = rgb_to_hex(primary_dominant_comp_color)
         secondary_dominant_comp_color_hex = rgb_to_hex(secondary_dominant_comp_color)
 
+        # Get monochromatic colors
+        logger.info("Detecting monochromatic color...")
+        monochromatic_colors = get_monochromatic_colors(dominant_colors[dominant_color_indices[0]])
+        # Creating dictionary entries
+        monochromatic_colors_dict = {}
+        for i, color in enumerate(monochromatic_colors):
+            monochromatic_colors_dict[f"monochromatic_color_rgb_{i+1}"] = color
+            monochromatic_colors_dict[f"monochromatic_color_hex_{i+1}"] = rgb_to_hex(color)
+        # Log the values
+        #for i in range(1, len(monochromatic_colors) + 1):
+        #    logger.info(f"Monochromatic Color {i} (RGB):", monochromatic_colors_dict[f"monochromatic_color_rgb_{i}"])
+        #    logger.info(f"Monochromatic Color {i} (Hex):", monochromatic_colors_dict[f"monochromatic_color_hex_{i}"])
+        
+        # Get analogous colors
+        logger.info("Detecting analogous color...")
+        analogous_colors = get_analogous_colors(dominant_colors[dominant_color_indices[0]])
+        # Creating dictionary entries
+        analogous_colors_dict = {}
+        for i, color in enumerate(analogous_colors):
+            analogous_colors_dict[f"analogous_color_rgb_{i+1}"] = color
+            analogous_colors_dict[f"analogous_color_hex_{i+1}"] = rgb_to_hex(color)
+        #for i in range(1, len(analogous_colors) + 1):
+        #    logger.info(f"Analogousc Color {i} (RGB):", analogous_colors_dict[f"analogous_color_rgb_{i}"])
+        #    logger.info(f"Analogous Color {i} (Hex):", analogous_colors_dict[f"analogous_color_hex_{i}"])
+        
         # Save the dominant color and mark as processed
         instance.primary_dominant_color = primary_dominant_color_hex
         instance.secondary_dominant_color = secondary_dominant_color_hex
         instance.complementary_primary_dominant_color = primary_dominant_comp_color_hex
         instance.complementary_secondary_dominant_color = secondary_dominant_comp_color_hex
-
+        instance.monochromatic_color_1 = monochromatic_colors_dict["monochromatic_color_hex_1"]
+        instance.monochromatic_color_2 = monochromatic_colors_dict["monochromatic_color_hex_2"]
+        instance.monochromatic_color_3 = monochromatic_colors_dict["monochromatic_color_hex_3"]
+        instance.analogous_color_1 = analogous_colors_dict["analogous_color_hex_1"]
+        instance.analogous_color_2 = analogous_colors_dict["analogous_color_hex_2"]
         instance.image_processed = True
         instance.save(update_fields=[
                                     'primary_dominant_color',
                                     'secondary_dominant_color',
                                     'complementary_primary_dominant_color',
                                     'complementary_secondary_dominant_color',
+                                    'monochromatic_color_1',
+                                    'monochromatic_color_2',
+                                    'monochromatic_color_3',
+                                    'analogous_color_1',
+                                    'analogous_color_2',
                                     'image_processed'
                                     ]
                                 )

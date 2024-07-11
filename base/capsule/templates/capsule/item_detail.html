@@ -15,6 +15,14 @@
     <div style="width: 50px; height: 50px; background-color: {{ item.complementary_primary_dominant_color }};"></div>
     <p><strong>Complementary Secondary Dominant Color:</strong></p>
     <div style="width: 50px; height: 50px; background-color: {{ item.complementary_secondary_dominant_color }};"></div>
+    <p><strong>Monochromatic Color:</strong></p>
+    <div style="width: 50px; height: 50px; background-color: {{ item.monochromatic_color_1 }};"></div>
+    <div style="width: 50px; height: 50px; background-color: {{ item.monochromatic_color_2 }};"></div>
+    <div style="width: 50px; height: 50px; background-color: {{ item.monochromatic_color_3 }};"></div>
+    <p><strong>Analogous Color:</strong></p>
+    <div style="width: 50px; height: 50px; background-color: {{ item.analogous_color_1 }};"></div>
+    <div style="width: 50px; height: 50px; background-color: {{ item.analogous_color_2 }};"></div>
     <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 300px; height: auto;"> <!-- Larger image -->
     <a href="{% url 'delete_item' item.id %}" class="btn btn-danger">Delete Item</a>
 {% endblock %}
+monochromatic_color_1

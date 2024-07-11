@@ -48,6 +48,7 @@ class Item(models.Model):
     monochromatic_color_2 = models.CharField(max_length=7, null=True, blank=True)
     monochromatic_color_3 = models.CharField(max_length=7, null=True, blank=True)
     analogous_color_1 = models.CharField(max_length=7, null=True, blank=True)
+    analogous_color_2 = models.CharField(max_length=7, null=True, blank=True)
     image = models.ImageField(upload_to='items/')
     image_processed = models.BooleanField(default=False)  # Track if the image has been processed
 
