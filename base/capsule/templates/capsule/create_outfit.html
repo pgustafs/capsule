@@ -23,7 +23,7 @@
 </div>
 <hr>
 <h2>Canvas</h2>
-<div id="canvas" class="canvas">
+<div id="canvas" class="canvas" style="width: 100%; height: 600px; border: 1px solid #ccc; background-color: #f9f9f9; position: relative; overflow: auto;">
     <p>Drag items here to create your outfit</p>
 </div>
 
@@ -33,46 +33,64 @@
 
 <script>
     $(function() {
+        var maxZIndex = 1;
+    
         $(".item").draggable({
             helper: "clone",
             appendTo: 'body',
             zIndex: 10000
         });
-
+    
         $("#canvas").droppable({
             accept: ".item",
             drop: function(event, ui) {
                 var itemId = ui.helper.data("id");
-
+    
                 // Check if the item is already in the canvas
                 if ($("#canvas .item[data-id='" + itemId + "']").length === 0) {
                     var clone = ui.helper.clone();
-                    var originalImage = clone.find("img");
                     clone.removeAttr("style");
-                    clone.find("img").css({ width: '20%', height: '20%' }); // Change image size to 200% of its original
+                    clone.css({
+                        width: '200px',  // Set image width to 100px
+                        height: 'auto',  // Set image height to auto
+                        position: 'absolute',
+                        zIndex: maxZIndex++
+                    });
+                    clone.find("img").css({
+                        width: '200px',  // Set image width to 100px
+                        height: 'auto'   // Set image height to auto
+                    });
                     clone.appendTo("#canvas").draggable({
-                        containment: "#canvas",
-                        stop: function(event, ui) {
-                            // Prevent duplicates within the canvas
-                            $(this).css("position", "relative");
-                        }
+                        containment: "#canvas"
                     }).attr("data-id", itemId);
+                    addClickHandler(clone);
                 }
             }
         });
-
+    
+        function addClickHandler(element) {
+            element.on('click', function() {
+                $(this).css('z-index', maxZIndex++);
+            });
+        }
+    
+        // Attach click handlers to any existing items in the canvas
+        $("#canvas .item").each(function() {
+            addClickHandler($(this));
+        });
+    
         $("#outfitForm").submit(function(e) {
             var selectedItems = [];
             $("#canvas .item").each(function() {
                 selectedItems.push($(this).data("id"));
             });
-
+    
             $('<input>').attr({
                 type: 'hidden',
                 name: 'items',
                 value: JSON.stringify(selectedItems)
             }).appendTo("#outfitForm");
-
+    
             return true;
         });
     });
