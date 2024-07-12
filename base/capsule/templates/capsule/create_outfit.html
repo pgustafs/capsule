@@ -2,10 +2,21 @@
 
 {% block title %}Create Outfit{% endblock %}
 
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block content %}
 <h1>Create Outfit</h1>
+<h2>Canvas</h2>
+<div id="canvas" class="canvas" style="width: 100%; height: 600px; border: 1px solid #ccc; background-color: #f9f9f9; position: relative; overflow: auto;">
+    <p>Drag items here to create your outfit</p>
+</div>
+<div class="background-selector">
+    <img src="{% static 'images/beach.jpg' %}" alt="Beach" class="background-option" data-background-url="{% static 'images/beach.jpg' %}">
+    <img src="{% static 'images/park.jpg' %}" alt="Park" class="background-option" data-background-url="{% static 'images/park.jpg' %}">
+    <img src="{% static 'images/winter.jpg' %}" alt="Winter" class="background-option" data-background-url="{% static 'images/winter.jpg' %}">
+    <!-- Add more background images as needed -->
+</div>
 <form method="post" id="outfitForm">
     {% csrf_token %}
     {{ form|crispy }}
@@ -22,10 +33,6 @@
     {% endfor %}
 </div>
 <hr>
-<h2>Canvas</h2>
-<div id="canvas" class="canvas" style="width: 100%; height: 600px; border: 1px solid #ccc; background-color: #f9f9f9; position: relative; overflow: auto;">
-    <p>Drag items here to create your outfit</p>
-</div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
@@ -60,6 +67,7 @@
                         width: '200px',  // Set image width to 100px
                         height: 'auto'   // Set image height to auto
                     });
+                    clone.find("p").hide(); // Hide the item name
                     clone.appendTo("#canvas").draggable({
                         containment: "#canvas"
                     }).attr("data-id", itemId);
@@ -78,6 +86,12 @@
         $("#canvas .item").each(function() {
             addClickHandler($(this));
         });
+
+        // Background selection
+        $(".background-option").on('click', function() {
+            var backgroundUrl = $(this).data("background-url");
+            $("#canvas").css("background-image", "url(" + backgroundUrl + ")");
+        });
     
         $("#outfitForm").submit(function(e) {
             var selectedItems = [];
@@ -95,4 +109,27 @@
         });
     });
 </script>
+<style>
+    #canvas {
+        width: 100%;
+        height: 600px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        position: relative;
+        overflow: auto;
+        background-size: cover;  /* Ensure the background image covers the entire canvas */
+        background-position: center;  /* Center the background image */
+    }
+
+    .background-selector img {
+        width: 100px;  /* Set the width for the background option thumbnails */
+        height: auto;  /* Maintain the aspect ratio */
+        margin: 10px;  /* Add some spacing around the images */
+        cursor: pointer;  /* Change the cursor to pointer to indicate it's clickable */
+    }
+
+    .background-selector img:hover {
+        opacity: 0.8;  /* Slightly dim the image on hover for a visual effect */
+    }
+</style>
 {% endblock %}

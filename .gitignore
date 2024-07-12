@@ -170,3 +170,5 @@ remove_background.py
 resize_png.py
 resized_images
 cv2_*
+.DS_Store
+**/.DS_Store
