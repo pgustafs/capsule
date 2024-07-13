@@ -3,26 +3,58 @@
 {% block title %}{{ item.name }}{% endblock %}
 
 {% block content %}
-    <h1>{{ item.name }}</h1>
-    <p><strong>Brand:</strong> {{ item.brand }}</p>
-    <p><strong>Size:</strong> {{ item.get_size_display }}</p>
-    <p><strong>Color:</strong> {{ item.color }}</p>
-    <p><strong>Primary Dominant Color:</strong></p>
-    <div style="width: 50px; height: 50px; background-color: {{ item.primary_dominant_color }};"></div>
-    <p><strong>Secondary Dominant Color:</strong></p>
-    <div style="width: 50px; height: 50px; background-color: {{ item.secondary_dominant_color }};"></div>
-    <p><strong>Complementary Primary Dominant Color:</strong></p>
-    <div style="width: 50px; height: 50px; background-color: {{ item.complementary_primary_dominant_color }};"></div>
-    <p><strong>Complementary Secondary Dominant Color:</strong></p>
-    <div style="width: 50px; height: 50px; background-color: {{ item.complementary_secondary_dominant_color }};"></div>
-    <p><strong>Monochromatic Color:</strong></p>
-    <div style="width: 50px; height: 50px; background-color: {{ item.monochromatic_color_1 }};"></div>
-    <div style="width: 50px; height: 50px; background-color: {{ item.monochromatic_color_2 }};"></div>
-    <div style="width: 50px; height: 50px; background-color: {{ item.monochromatic_color_3 }};"></div>
-    <p><strong>Analogous Color:</strong></p>
-    <div style="width: 50px; height: 50px; background-color: {{ item.analogous_color_1 }};"></div>
-    <div style="width: 50px; height: 50px; background-color: {{ item.analogous_color_2 }};"></div>
-    <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 300px; height: auto;"> <!-- Larger image -->
-    <a href="{% url 'delete_item' item.id %}" class="btn btn-danger">Delete Item</a>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="row">
+                <div class="col-md-6 d-flex justify-content-center my-3">
+                    <div class="image-wrapper">
+                        <img src="{{ item.image.url }}" class="img-fluid" alt="{{ item.name }}">
+                    </div>
+                </div>
+                <div class="col-md-6 my-3">
+                    <p>{{ item.brand }}</p>
+                    <h2>{{ item.name }}</h2>
+                    
+                    <p><strong>Size:</strong> {{ item.get_size_display }}</p>
+                    <p><strong>Color:</strong> {{ item.color }}</p>
+                    
+                    <h5>Dominant Colors</h5>
+                    <div class="d-flex">
+                        <div class="text-center me-3">
+                            <div class="color-box" style="background-color: {{ item.primary_dominant_color }};"></div>
+                            <p class="text-italic">Primary</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-box" style="background-color: {{ item.secondary_dominant_color }};"></div>
+                            <p class="text-italic">Secondary</p>
+                        </div>
+                    </div>
+                    <h5>Complementary Colors</h5>
+                    <div class="d-flex">
+                        <div class="text-center me-3">
+                            <div class="color-box" style="background-color: {{ item.complementary_primary_dominant_color }};"></div>
+                            <p class="text-italic">Primary</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-box" style="background-color: {{ item.complementary_secondary_dominant_color }};"></div>
+                            <p class="text-italic">Secondary</p>
+                        </div>
+                    </div>
+                    
+                    <h5>Monochromatic Colors:</h5>
+                    <div class="color-box" style="background-color: {{ item.monochromatic_color_1 }};"></div>
+                    <div class="color-box" style="background-color: {{ item.monochromatic_color_2 }};"></div>
+                    <div class="color-box" style="background-color: {{ item.monochromatic_color_3 }};"></div>
+                    
+                    <h5>Analogous Colors:</strong></h5>
+                    <div class="color-box" style="background-color: {{ item.analogous_color_1 }};"></div>
+                    <div class="color-box" style="background-color: {{ item.analogous_color_2 }};"></div>
+                    
+                    <a href="{% url 'delete_item' item.id %}" class="btn btn-danger mt-3">Delete Item</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
-monochromatic_color_1

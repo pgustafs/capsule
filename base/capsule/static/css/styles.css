@@ -1,10 +1,6 @@
-#loadingSpinner {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-    display: none;
+/* base */
+body {
+    background-color: #f8f9fa;  /* Light grey background */
 }
 
 /* clothes matching canvas */
@@ -43,4 +39,63 @@
     max-height: 100%;
 }
 
-/* sidebar and dropdowns*/
+/* item list cards */
+.card {
+    background-color: white;  /* White card background */
+    border: none;  /* Remove borders */
+    transition: box-shadow 0.3s ease-in-out;  /* Smooth shadow transition */
+    border-radius: 0;  /* Ensure no rounded corners */
+    position: relative;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);  /* Drop shadow on hover */
+}
+
+.card-img-top {
+    object-fit: contain;  /* Ensure the entire image is visible */
+    height: 300px;  /* Adjust the height as needed */
+    width: 100%;
+    padding: 0;  /* Remove default padding/margin of the image */
+    border-radius: 0;  /* Ensure no rounded corners */
+}
+
+.card-body h5, .card-body p {
+    color: inherit;  /* Ensure text inherits the color of its parent */
+}
+
+.stretched-link::after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    content: "";
+    z-index: 1;
+}
+
+/* Item_detail stuff */
+.image-wrapper {
+    margin-left: 50px;
+    margin-right: 50px;
+    width: 100%;
+}
+
+.color-box {
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+}
+
+@media (max-width: 768px) {
+    .color-box {
+        margin-bottom: 10px;
+    }
+
+    .image-wrapper {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}

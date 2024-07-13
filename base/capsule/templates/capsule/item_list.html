@@ -1,20 +1,46 @@
 {% extends 'capsule/base.html' %}
 
-{% block title %}All Items{% endblock %}
+{% block title %}{{ item.name }}{% endblock %}
 
 {% block content %}
-<h1>{{ subcategory.name }} Items</h1>
-<div class="row">
-    {% for item in items %}
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
-                <div class="card-body">
-                    <p class="card-text">{{ item.name }}</p>
-                    <h2><a href="{% url 'item_detail' item.id %}">Details</a></h2>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="row">
+                <div class="col-md-6 my-3 d-flex justify-content-center">
+                    <img src="{{ item.image.url }}" class="img-fluid mx-4" alt="{{ item.name }}" style="max-width: calc(100% - 100px);">
+                </div>
+                <div class="col-md-6 my-3">
+                    <h1>{{ item.name }}</h1>
+                    <p><strong>Brand:</strong> {{ item.brand }}</p>
+                    <p><strong>Size:</strong> {{ item.get_size_display }}</p>
+                    <p><strong>Color:</strong> {{ item.color }}</p>
+                    
+                    <p><strong>Primary Dominant Color:</strong></p>
+                    <div class="color-box" style="background-color: {{ item.primary_dominant_color }};"></div>
+                    
+                    <p><strong>Secondary Dominant Color:</strong></p>
+                    <div class="color-box" style="background-color: {{ item.secondary_dominant_color }};"></div>
+                    
+                    <p><strong>Complementary Primary Dominant Color:</strong></p>
+                    <div class="color-box" style="background-color: {{ item.complementary_primary_dominant_color }};"></div>
+                    
+                    <p><strong>Complementary Secondary Dominant Color:</strong></p>
+                    <div class="color-box" style="background-color: {{ item.complementary_secondary_dominant_color }};"></div>
+                    
+                    <p><strong>Monochromatic Colors:</strong></p>
+                    <div class="color-box" style="background-color: {{ item.monochromatic_color_1 }};"></div>
+                    <div class="color-box" style="background-color: {{ item.monochromatic_color_2 }};"></div>
+                    <div class="color-box" style="background-color: {{ item.monochromatic_color_3 }};"></div>
+                    
+                    <p><strong>Analogous Colors:</strong></p>
+                    <div class="color-box" style="background-color: {{ item.analogous_color_1 }};"></div>
+                    <div class="color-box" style="background-color: {{ item.analogous_color_2 }};"></div>
+                    
+                    <a href="{% url 'delete_item' item.id %}" class="btn btn-danger mt-3">Delete Item</a>
                 </div>
             </div>
         </div>
-    {% endfor %}
+    </div>
 </div>
 {% endblock %}
