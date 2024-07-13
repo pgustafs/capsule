@@ -16,6 +16,11 @@
     <img src="{% static 'images/park.jpg' %}" alt="Park" class="background-option" data-background-url="{% static 'images/park.jpg' %}">
     <img src="{% static 'images/winter.jpg' %}" alt="Winter" class="background-option" data-background-url="{% static 'images/winter.jpg' %}">
     <!-- Add more background images as needed -->
+    <div class="color-option" data-background-color="#ffcccb" style="background-color: #ffcccb;"></div>
+    <div class="color-option" data-background-color="#add8e6" style="background-color: #add8e6;"></div>
+    <div class="color-option" data-background-color="#90ee90" style="background-color: #90ee90;"></div>
+    <div class="color-option" data-background-color="#ffffff" style="background-color: #ffffff;"></div>
+    <!-- Add more colors as needed -->
 </div>
 <form method="post" id="outfitForm">
     {% csrf_token %}
@@ -92,6 +97,13 @@
             var backgroundUrl = $(this).data("background-url");
             $("#canvas").css("background-image", "url(" + backgroundUrl + ")");
         });
+
+        // Background color selection
+        $(".color-option").on('click', function() {
+            var backgroundColor = $(this).data("background-color");
+            $("#canvas").css("background-color", backgroundColor);
+            $("#canvas").css("background-image", "");  // Reset background image
+        });
     
         $("#outfitForm").submit(function(e) {
             var selectedItems = [];
@@ -130,6 +142,18 @@
 
     .background-selector img:hover {
         opacity: 0.8;  /* Slightly dim the image on hover for a visual effect */
+    }
+
+    .color-option {
+        width: 100px;  /* Set the width for the color option */
+        height: 60px;  /* Set the height for the color option */
+        display: inline-block;  /* Display as inline block */
+        margin: 10px;  /* Add some spacing around the color options */
+        cursor: pointer;  /* Change the cursor to pointer to indicate it's clickable */
+    }
+
+    .color-option:hover {
+        opacity: 0.8;  /* Slightly dim the color option on hover for a visual effect */
     }
 </style>
 {% endblock %}
